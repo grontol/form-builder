@@ -1,0 +1,32 @@
+{
+  "name": "muse-vue-ant-design-dashboard-pro",
+  "version": "1.0.0",
+  "description": "A user-friendly, premium and beautiful dashboard based on Ant Design Vue.",
+  "main": "src/main.js",
+  "homepage": "https://demos.creative-tim.com/muse-vue-ant-design-dashboard-pro/",
+  "repository": "https://github.com/creativetimofficial/muse-vue-ant-design-dashboard-pro",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service --open serve",
+    "dev": "npm run serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "gsap": "^3.11.3",
+    "regenerator-runtime": "^0.13.10",
+    "vue": "2.6.14",
+    "vue-horizontal-scroll": "^0.2.4",
+    "vue-loading-spinner": "^1.0.11",
+    "vue-router": "3.5.2",
+    "vuex": "~3.6.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "4.5.13",
+    "@vue/cli-plugin-router": "4.5.13",
+    "@vue/cli-service": "4.5.13",
+    "node-sass": "4.14.1",
+    "sass-loader": "10.1.1",
+    "vue-template-compiler": "2.6.14"
+  }
+}
