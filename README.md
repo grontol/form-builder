@@ -2,6 +2,8 @@
 
 ![version](https://img.shields.io/badge/version-0.0.1-blue.svg)
 
+###[ UNDER CONSTRUCTION ]
+
 Simple but powerful form builder. Component based builder.
 
 **Create Your Own Component**
