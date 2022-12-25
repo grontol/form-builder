@@ -27,7 +27,7 @@ export default {
 
     methods: {
         hide() {
-            this.$menu.hide()
+            this.hideContextMenu()
         },
     },
 

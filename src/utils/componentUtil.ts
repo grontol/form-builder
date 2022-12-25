@@ -1,6 +1,6 @@
 import {builtInComponents, componentProps} from "./componentDefs";
 
-function createComponentByName(name) {
+function createComponentByName(name: string) {
     const compProps = componentProps[name]
     const compLabel = builtInComponents.find(x => x.comp === name)
 

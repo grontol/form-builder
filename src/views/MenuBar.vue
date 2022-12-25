@@ -19,7 +19,7 @@
         <div class="divider"></div>
 
         <div class="horizontal-flex">
-            <div class="breadcrumb-item horizontal-flex flex-center" v-for="(b, i) in breadcrumbs">
+            <div class="breadcrumb-item horizontal-flex flex-center" v-for="(b, i) in breadcrumbs" :key="i">
                 <template v-if="i > 0">
                     <img src="images/right-arrow.png"/>
                     <div class="breadcrumb-comp" @click="$store.dispatch('item/setActiveItem', b)">{{ b.name }}</div>
@@ -56,7 +56,7 @@ export default {
 
             while (p) {
                 ar.push(p)
-                p = p.parent()
+                p = p.parent
             }
 
             ar.push({ name: "My Component" })

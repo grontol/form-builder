@@ -23,17 +23,18 @@ Vue.config.productionTip = false
 import './utils/componentDefs'
 
 Vue.directive('click-outside', {
-    bind: function (el, binding, vnode) {
-        el.clickOutsideEvent = function (event) {
-            // here I check that click was outside the el and his children
+    bind: function (el: any, binding, vnode) {
+        el.clickOutsideEvent = function (event: any) {
             if (!(el == event.target || el.contains(event.target))) {
-                // and if it did, call method provided in attribute value
+                // @ts-ignore
                 vnode.context[binding.expression](event)
             }
-        };
+        }
+
         document.body.addEventListener('click', el.clickOutsideEvent)
     },
-    unbind: function (el) {
+
+    unbind: function (el: any) {
         document.body.removeEventListener('click', el.clickOutsideEvent)
     },
 })
@@ -41,60 +42,81 @@ Vue.directive('click-outside', {
 Vue.mixin({
     methods: {
         addItem(name) {
+            // @ts-ignore
             this.$store.dispatch('item/addItem', name)
         },
 
         deleteSelectedItems() {
+            // @ts-ignore
             this.$store.dispatch('item/deleteSelectedItems')
         },
 
         toggleFullScreen() {
             const el = document.getElementById("app")
 
+            // @ts-ignore
             if (!this.fullScreen) {
-                if (el.requestFullscreen)
+                if (el?.requestFullscreen)
                     el.requestFullscreen()
-                else if (el.webkitRequestFullscreen)
-                    el.webkitRequestFullscreen()
-                else if (el.msRequestFullscreen)
-                    el.msRequestFullscreen()
             }
             else {
                 document.exitFullscreen()
             }
         },
+
+        showContextMenu(target: any, options: MenuOption[], onClick: (selected: any) => void) {
+            // @ts-ignore
+            this.$store.dispatch('menu/showMenu', {
+                target,
+                options,
+                onClick,
+            })
+        },
+
+        hideContextMenu() {
+            // @ts-ignore
+            this.$store.dispatch('menu/hideMenu')
+        }
     },
 
     computed: {
         activeItem() {
+            // @ts-ignore
             return this.$store.getters['item/activeItem']
         },
 
         hoveredItem() {
+            // @ts-ignore
             return this.$store.getters['item/hoveredItem']
         },
 
         draggedItem() {
+            // @ts-ignore
             return this.$store.getters['item/draggedItem']
         },
 
         activeTreeComp() {
+            // @ts-ignore
             return this.$store.getters['item/activeTreeComp']
         },
 
         showProperties() {
+            // @ts-ignore
             return this.$store.getters["ui/showProperties"]
         },
 
         showHierarchy() {
+            // @ts-ignore
             return this.$store.getters["ui/showHierarchy"]
         },
 
         onContextMenuClick() {
+            // @ts-ignore
             return this.$store.getters['menu/onClick']
         },
 
         fullScreen() {
+            // @ts-ignore
             return this.$store.getters["ui/fullScreen"]
         },
     }
@@ -115,27 +137,15 @@ const app = new Vue({
     },
 
     methods: {
-        fullScreenChange(e) {
+        fullScreenChange() {
             if (document.fullscreenElement) {
+                // @ts-ignore
                 this.$store.dispatch('ui/setFullScreen', true)
             }
             else {
+                // @ts-ignore
                 this.$store.dispatch('ui/setFullScreen', false)
             }
         }
     },
 }).$mount('#app')
-
-Vue.prototype.$menu = {
-    show: (target, options, onClick) => {
-        app.$store.dispatch('menu/showMenu', {
-            target,
-            options,
-            onClick,
-        })
-    },
-
-    hide: () => {
-        app.$store.dispatch('menu/hideMenu')
-    }
-}

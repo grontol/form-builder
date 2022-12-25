@@ -31,13 +31,15 @@
             </div>
         </div>
         <div style="margin-left: 15px;" v-show="item.expanded">
-            <TreeItem :item="item" v-for="item in children"></TreeItem>
+            <TreeItem :item="item" v-for="item in children" :key="item.id"></TreeItem>
         </div>
     </div>
 </template>
 
 <script>
-import {builtInComponents} from "../utils/componentDefs";
+
+import Vue from "vue";
+import {builtInComponents} from "@/utils/componentDefs";
 
 const menuOptions = [
     {
@@ -120,10 +122,6 @@ export default {
         })
     },
 
-    beforeDestroy() {
-
-    },
-
     methods: {
         toggleExpand() {
             this.$store.dispatch('item/setItemExpanded', {
@@ -198,7 +196,7 @@ export default {
                 this.dropInto = 'top'
             else if (y > h - 5)
                 this.dropInto = 'bottom'
-            else if (this.draggedItem.parent().id === this.item.id)
+            else if (this.draggedItem.parent.id === this.item.id)
                 this.dropInto = 'none'
             else
                 this.dropInto = 'into'
@@ -206,7 +204,7 @@ export default {
 
         onDrop(e) {
             if (this.draggedItem.id === this.item.id ||
-                (this.draggedItem.parent().id === this.item.id && this.dropInto === 'into'))
+                (this.draggedItem.parent.id === this.item.id && this.dropInto === 'into'))
                 return
 
             this.$store.dispatch('item/dropItem', {
@@ -259,7 +257,7 @@ export default {
             const pasteMenu = menuOptions.findRecursive(x => x.value === 'paste')
             pasteMenu.disabled = this.$store.getters['item/clipboardItems'].length === 0
 
-            this.$menu.show(e, menuOptions, (sel) => {
+            this.showContextMenu(e, menuOptions, (sel) => {
                 this.disableClickOutsideTemp = true
 
                 if (sel[0] === 'rename') {
@@ -320,9 +318,7 @@ export default {
     },
 
     watch: {
-        isSelected(val) {
 
-        }
     },
 }
 </script>

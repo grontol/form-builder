@@ -1,6 +1,8 @@
 import PrefManager from "../../data/prefManager";
 import {createComponentByName} from "../../utils/componentUtil";
 import Vue from "vue";
+import ItemData from "../../data/itemData";
+import TreeData from "../../data/treeData";
 
 const maxHistory = 10
 const items = [
@@ -139,7 +141,7 @@ const state = {
     history: [],
     historyIndex: maxHistory,
 
-    tree: assignIds(PrefManager.getAppState(items), null),
+    tree: PrefManager.getAppState(items).map(x => new ItemData(x)),
 
     activeItem: null,
     hoveredItem: null,
@@ -411,8 +413,8 @@ const mutations = {
         // Remove hover
         state.hoveredItem = null
 
-        let dropParent = dropItem.parent()
-        let toParent = toItem.parent()
+        let dropParent = dropItem.parent
+        let toParent = toItem.parent
 
         if (!dropParent)
             dropParent = state.tree
@@ -439,7 +441,7 @@ const mutations = {
             return
 
         for (const item of items) {
-            let parent = item.parent()
+            let parent = item.parent
 
             if (!parent)
                 parent = state.tree
@@ -457,7 +459,7 @@ const mutations = {
             return
 
         for (const item of items) {
-            let parent = item.parent()
+            let parent = item.parent
 
             if (!parent)
                 parent = state.tree
