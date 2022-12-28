@@ -30,6 +30,59 @@ const formStyles = `
 <link rel="stylesheet" type="text/css" href="http://localhost/simrs/assets/cssmin/jquery.ui.combogrid.css">
 <link href="http://localhost/simrs/assets/global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css" />
 
+<style type="text/css">
+    /*padding wadah*/
+    .portlet.light.style {
+        padding: 1px 16px 0px;
+        background-color: #fff;
+    }
+
+    /*jarak atau spasi tiap kotak*/
+    .portlet {
+        margin-top: 0;
+        margin-bottom: 15px;
+        padding: 0;
+        border-radius: 0px;
+    }
+
+    /*wadah inti*/
+    .page-container {
+        padding: 15px 15px 0;
+    }
+
+    /*detail pasien*/
+    .note {
+        margin: 0 0 15px;
+    }
+
+    /*spasi antara sidebar dengan content*/
+    .page-content-wrapper .page-content {
+        padding: 2px 0 0 15px;
+    }
+
+    /*margin bootom panel*/
+    .panel {
+        margin-bottom: 15px;
+    }
+
+    .panel-body.index {
+        font-size: 14px;
+    }
+
+    h3 {
+        font-size: 19px;
+    }
+
+    .datepicker{
+        padding: 10px;
+    }
+
+    .clearfix{
+        background: #3B3F51;
+    }
+
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="http://localhost/simrs/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
 <script src="http://localhost/simrs/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
