@@ -1,6 +1,12 @@
 export interface MenuState {
-    show: boolean,
-    target: any,
-    options: MenuOption[],
-    onClick: ((sel: MenuOption) => void) | null,
+    showContextMenu: boolean,
+    contextMenuTarget: any,
+    contextMenuOptions: MenuOption[],
+    contextMenuOnClick: ((sel: MenuOption) => void) | null,
+
+    showAlert: boolean,
+    alertTitle: string,
+    alertMessage: string,
+    alertType: string,
+    alertOnOk: (() => void) | null,
 }

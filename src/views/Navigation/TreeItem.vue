@@ -1,5 +1,5 @@
 <template>
-    <div class="root-item vertical-flex" @contextmenu.prevent.stop="showMenu" :key="item.id">
+    <div class="root-item vertical-flex" @contextmenu.prevent.stop="showMenu" :key="item.id" @click.stop>
         <div class="horizontal-flex">
             <div v-if="hasChildren" class="arrow" @click.stop="toggleExpand">{{ item.expanded ? '▼' : '►' }}</div>
             <div v-else class="arrow"></div>
@@ -25,8 +25,8 @@
                      @input="nameChange"
                      @keydown="nameKeyDown"
                      v-click-outside="onClickOutside"
-                     @mouseenter="$store.dispatch('item/setHoveredItem', item)"
-                     @mouseleave="$store.dispatch('item/setHoveredItem', null)"
+                     @mouseenter="onMouseEnter"
+                     @mouseleave="onMouseLeave"
                 >{{ item.name }}</div>
             </div>
         </div>
@@ -38,8 +38,9 @@
 
 <script>
 
-import Vue from "vue";
-import {builtInComponents} from "@/utils/componentDefs";
+import {builtInComponents} from "../../utils/componentDefs";
+
+const enableHover = false
 
 const menuOptions = [
     {
@@ -128,6 +129,16 @@ export default {
                 item: this.item,
                 value: !this.item.expanded
             })
+        },
+
+        onMouseEnter() {
+            if (enableHover)
+                this.$store.dispatch('item/setHoveredItem', this.item)
+        },
+
+        onMouseLeave() {
+            if (enableHover)
+                this.$store.dispatch('item/setHoveredItem', null)
         },
 
         onClick(e) {

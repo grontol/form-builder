@@ -6,39 +6,54 @@
             <StripBar class="fb-root-el"></StripBar>
 
             <TreeView class="fb-root-el" id="tree-view" :style="'width:' + leftWidth + 'px'" v-show="showHierarchy"></TreeView>
-            <div class="divider" @mousedown="leftDividerDown" @click.stop></div>
+            <div class="divider" @mousedown="leftDividerDown"></div>
 
-            <div class="main-content flex-fill" style="overflow: auto" @scroll="onMainContentScroll">
-                <FormView class="flex-fill" :parent-scroll-offset="mainContentScroll"></FormView>
+            <div class="vertical-flex flex-fill">
+                <EditorTab class="fb-root-el"></EditorTab>
+                <ContentView class="flex-fill"></ContentView>
             </div>
 
-            <div class="divider" @mousedown="rightDividerDown" @click.stop></div>
+            <div class="divider" @mousedown="rightDividerDown"></div>
+
             <Properties class="fb-root-el" id="properties" :style="'width:' + rightWidth + 'px'" v-show="showProperties"></Properties>
+            <ComponentPropsEditor class="fb-root-el" id="comp-props-editor" :style="'width:' + rightWidth + 'px'" v-show="showCompPropsEditor"></ComponentPropsEditor>
 
             <StripBarRight class="fb-root-el"></StripBarRight>
         </div>
 
         <StatusBar class="fb-root-el"></StatusBar>
 
-        <ContextMenu class="fb-root-el" v-if="$store.getters['menu/show']"></ContextMenu>
+        <ContextMenu class="fb-root-el" v-if="$store.getters['menu/showContextMenu']"/>
+        <Alert class="fb-root-el" v-if="$store.getters['menu/showAlert']"/>
     </div>
 </template>
 
 <script>
-import ItemList from "./ItemList";
-import Properties from "./Properties";
-import FormView from "./FormView";
-import TreeView from "./TreeView";
+import Properties from "./Navigation/Properties";
+import FormView from "./Editor/FormView";
+import TreeView from "./Navigation/TreeView";
 import PrefManager from "../data/prefManager";
 import ContextMenu from "../components/ContextMenu";
-import StatusBar from "./StatusBar";
-import StripBar from "./StripBar";
-import StripBarRight from "./StripBarRight";
-import MenuBar from "./MenuBar";
+import StatusBar from "./Menu/StatusBar";
+import StripBar from "./Navigation/StripBar";
+import StripBarRight from "./Navigation/StripBarRight";
+import MenuBar from "./Menu/MenuBar";
+import ComponentPropsEditor from "./Navigation/ComponentPropsEditor";
+import ScriptEditor from "./Editor/ScriptEditor";
+import ContentView from "./Editor/ContentView";
+import EditorTab from "./Editor/EditorTab";
+import Alert from "../components/Alert";
+
 export default {
     name: "Home",
 
-    components: {MenuBar, StripBarRight, StripBar, StatusBar, ContextMenu, TreeView, FormView, Properties, ItemList},
+    components: {
+        Alert,
+        EditorTab,
+        ContentView,
+        ScriptEditor,
+        ComponentPropsEditor,
+        MenuBar, StripBarRight, StripBar, StatusBar, ContextMenu, TreeView, FormView, Properties},
 
     data() {
         return {
@@ -98,11 +113,6 @@ export default {
     width: 100%;
     height: 100%;
     overflow: hidden;
-}
-
-.main-content {
-    padding: 15px;
-    background: #333a42;
 }
 
 .divider {

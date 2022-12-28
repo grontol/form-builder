@@ -1,5 +1,5 @@
 <template>
-    <component :is="item.comp" v-bind="item.props"
+    <component :is="item.comp" v-bind="bindProps(item.props)"
        class="root"
        :class="{ 'hovered': hovered || isHovered, 'selected': isSelected }"
        :style="{ 'z-index': (50 + item.level) }"
@@ -8,16 +8,26 @@
        @mouseleave.native.stop="onMouseLeave"
        @click.native.stop="select"
     >
-        <FormViewItem v-if="item.children" v-for="c in item.children" :item="c" v-bind="c.props"></FormViewItem>
+        <template v-if="item.children" scope="params">
+            <FormViewItem v-for="(c, i) in item.children" :item="c" :key="i" :params="params"></FormViewItem>
+        </template>
     </component>
 </template>
 
 <script>
+import {findVariable} from "../../utils/utils";
+
 export default {
     name: "FormViewItem",
 
     props: {
         item: Object,
+        params: {
+            type: Object,
+            default() {
+                return {}
+            }
+        }
     },
 
     data() {
@@ -48,6 +58,36 @@ export default {
         select() {
             this.$store.dispatch('item/setActiveItem', this.item)
         },
+
+        bindProps(props) {
+            if (!props)
+                return props
+
+            const handler = {
+                get: (target, prop, receiver) => {
+                    const val = target[prop]
+                    const vars = findVariable(val)
+                    let newVal = val
+
+                    // TODO Only works for string
+                    for (let a = vars.length - 1; a >= 0; a--) {
+                        const v = vars[a]
+
+                        if (this.params[v.name] === undefined || this.params[v.name] === null) {
+                            this.reportError("Cannot find param with name : " + v.name, this.item)
+
+                            newVal = newVal.substring(0, v.startIndex) + '--> [ No Param : ' + v.name + ' ] <--' + newVal.substring(v.endIndex)
+                        }
+                        else
+                            newVal = newVal.substring(0, v.startIndex) + this.params[v.name] + newVal.substring(v.endIndex)
+                    }
+
+                    return newVal
+                }
+            }
+
+            return new Proxy(props, handler)
+        },
     },
 
     computed: {
@@ -65,9 +105,6 @@ export default {
     },
 
     watch: {
-        isSelected(v) {
-
-        }
     }
 }
 </script>

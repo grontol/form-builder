@@ -17,6 +17,7 @@ import FbFormGroup from "../components/containers/FbFormGroup";
 import FbInput from "../components/inputs/FbInput";
 // @ts-ignore
 import FbLabel from "../components/fb/FbLabel";
+import FbLoop from "@/components/fb/FbLoop.vue";
 
 const builtInComponents: any[] = []
 const componentProps: any = {}
@@ -31,6 +32,8 @@ registerComponent('fb-form-group', FbFormGroup, "Form Group")
 
 registerComponent('fb-input', FbInput, "Input")
 registerComponent('fb-label', FbLabel, "Label")
+
+registerComponent('fb-loop', FbLoop, "Loop")
 
 function registerComponent(name: string, comp: any, label: string) {
     Vue.component(name, comp)

@@ -1,19 +1,19 @@
 <template>
-    <div class="root vertical-flex" @click.stop>
+    <div class="root vertical-flex">
         <div class="horizontal-flex flex-center">
-            <MenuItemIcon src="images/add-file.png"/>
-            <MenuItemIcon src="images/open.png"/>
-            <MenuItemIcon src="images/save.png"/>
+            <MenuItemIcon v-tooltip="'New File'" src="images/add-file.png" @click="$store.dispatch('item/addFile')"/>
+            <MenuItemIcon v-tooltip="'Open File'" src="images/open.png"/>
+            <MenuItemIcon v-tooltip="'Save File'" src="images/save.png" @click="save"/>
             <div class="vertical-divider"></div>
-            <MenuItemIcon src="images/undo.png" :disabled="!canUndo" @click="undo"/>
-            <MenuItemIcon src="images/undo.png" :flipped="true" :disabled="!canRedo" @click="redo"/>
+            <MenuItemIcon v-tooltip="'Undo'" src="images/undo.png" :disabled="!canUndo" @click="undo"/>
+            <MenuItemIcon v-tooltip="'Redo'" src="images/undo.png" :flipped="true" :disabled="!canRedo" @click="redo"/>
             <div class="vertical-divider"></div>
-            <MenuItemIcon src="images/copy.png" :disabled="!canCopy"/>
-            <MenuItemIcon src="images/paste.png" :disabled="!canPaste"/>
+            <MenuItemIcon v-tooltip="'Copy'" src="images/copy.png" :disabled="!canCopy"/>
+            <MenuItemIcon v-tooltip="'Paste'" src="images/paste.png" :disabled="!canPaste"/>
 
             <div class="flex-fill"></div>
 
-            <MenuItemIcon :src="fullScreen ? 'images/minimize-2.png' : 'images/maximize.png'" :large="true" @click="toggleFullScreen"/>
+            <MenuItemIcon v-tooltip="fullScreen ? 'Exit Fullscreen' : 'Fullscreen'" :src="fullScreen ? 'images/minimize-2.png' : 'images/maximize.png'" :large="true" @click="toggleFullScreen"/>
         </div>
 
         <div class="divider"></div>
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import MenuItemIcon from "../components/MenuItemIcon";
+import MenuItemIcon from "../../components/MenuItemIcon";
 export default {
     name: "MenuBar",
     components: {MenuItemIcon},
@@ -43,6 +43,10 @@ export default {
 
         redo() {
             this.$store.dispatch('item/redo')
+        },
+
+        save() {
+            this.$store.dispatch('item/save')
         },
     },
 

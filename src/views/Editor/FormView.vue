@@ -28,7 +28,7 @@ export default {
 
     computed: {
         items() {
-            return this.$store.getters['item/tree']
+            return this.$store.getters['item/tree'].children
         },
 
         activeItem() {
@@ -54,8 +54,8 @@ export default {
 <style scoped lang="scss">
 
 .root {
-    overflow: auto;
     background: white;
+    flex: 1;
 }
 
 .selection {

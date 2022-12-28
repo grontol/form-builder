@@ -33,11 +33,11 @@ export default {
 
     computed: {
         target() {
-            return this.$store.getters['menu/target']
+            return this.$store.getters['menu/contextMenuTarget']
         },
 
         options() {
-            return this.$store.getters['menu/options']
+            return this.$store.getters['menu/contextMenuOptions']
         },
     }
 }

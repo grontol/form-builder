@@ -1,6 +1,7 @@
 <template>
-    <div class="root">
+    <div class="root vertical-flex">
         <div class="strip-item" :class="{ 'active': showProperties }" @click="propertiesClick">Properties</div>
+        <div class="strip-item" :class="{ 'active': showCompPropsEditor }" @click="comPropsEditorClick">Component Props Editor</div>
     </div>
 </template>
 
@@ -11,7 +12,11 @@ export default {
     methods: {
         propertiesClick() {
             this.$store.dispatch('ui/toggleProperties')
-        }
+        },
+
+        comPropsEditorClick() {
+            this.$store.dispatch('ui/toggleCompPropsEditor')
+        },
     },
 }
 </script>

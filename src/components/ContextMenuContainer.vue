@@ -1,8 +1,6 @@
 <template>
     <div class="menu-container">
-        <template v-for="opt in options">
-            <ContextMenuItem :option="opt" :parent-value="parentValue"></ContextMenuItem>
-        </template>
+        <ContextMenuItem v-for="(opt, i) in options" :key="i" :option="opt" :parent-value="parentValue"></ContextMenuItem>
     </div>
 </template>
 

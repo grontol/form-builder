@@ -45,6 +45,10 @@ class ItemData {
         this.children.push(new ItemData(defs, this))
     }
 
+    addChildrenItem(item: ItemData) {
+        Vue.set(this.children, this.children.length, item)
+    }
+
     makeReactive() {
         for (const prop in this) {
             Vue.set(this, prop, this[prop])

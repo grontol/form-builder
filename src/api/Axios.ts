@@ -1,16 +1,15 @@
 import axios from "axios";
 import Logger from "./Logger";
-import {userToken} from "../main";
 
 const createAxios = () => {
     return axios.create({
-        baseURL: "https://api.accountingcyclesimulation.com/api/",
+        baseURL: "http://localhost/simrs/form-builder/Api/",
     })
 }
 
 let Axios = createAxios()
 
-export function _post(url, data) {
+export function _post(url: string, data: any) {
     Logger.d("API POST " + url + " with data : ")
     Logger.d(data)
 
@@ -22,11 +21,9 @@ export function _post(url, data) {
         .then(r => {
             return parse(r, "POST " + url)
         })
-        .finally(() => {
-        })
 }
 
-export function _put(url, data) {
+export function _put(url: string, data: any) {
     Logger.d("API PUT " + url + " with data : ")
     Logger.d(data)
 
@@ -38,11 +35,9 @@ export function _put(url, data) {
         .then(r => {
             return parse(r, "PUT " + url)
         })
-        .finally(() => {
-        })
 }
 
-export function _get(url) {
+export function _get(url: string) {
     Logger.d("API GET " + url)
 
     return Axios.get(url + getToken(), {
@@ -52,11 +47,9 @@ export function _get(url) {
     }).then(r => {
         return parse(r, "GET " + url)
     })
-        .finally(() => {
-        })
 }
 
-export function _delete(url, data) {
+export function _delete(url: string, data: any) {
     Logger.d("API DELETE " + url)
 
     return Axios.delete(url + getToken(), {
@@ -67,11 +60,9 @@ export function _delete(url, data) {
     }).then(r => {
         return parse(r, "DELETE " + url)
     })
-        .finally(() => {
-        })
 }
 
-function parse(r, text) {
+function parse(r: any, text: string) {
     if (!r.data.success) {
         Logger.e("Error dari API : " + text)
         Logger.e(r.data)
@@ -91,9 +82,9 @@ function parse(r, text) {
 }
 
 function getToken() {
-    if (userToken)
-        return "?token=" + userToken
-    else
+    // if (userToken)
+    //     return "?token=" + userToken
+    // else
         return ""
 }
 

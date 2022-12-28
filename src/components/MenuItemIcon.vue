@@ -1,5 +1,5 @@
 <template>
-    <img :src="src" :class="{ 'disabled': disabled, 'flipped': flipped, 'large': large }" alt="" @click="$emit('click', $event)"/>
+    <img :src="src" :class="{ 'disabled': disabled, 'flipped': flipped, 'large': large, 'on': on }" alt="" @click="$emit('click', $event)"/>
 </template>
 
 <script>
@@ -19,7 +19,11 @@ export default {
         disabled: {
             type: Boolean,
             default: false,
-        }
+        },
+        on: {
+            type: Boolean,
+            default: false,
+        },
     }
 }
 </script>
@@ -50,6 +54,10 @@ img {
     }
 
     &:not(.disabled):active {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    &.on {
         background: rgba(255, 255, 255, 0.2);
     }
 }

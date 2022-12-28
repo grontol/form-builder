@@ -11,6 +11,7 @@ import router from './router'
 
 // App Styling
 import './styles/app.scss';
+import 'remixicon/fonts/remixicon.css';
 
 // GSAP
 import gsap from "gsap";
@@ -19,8 +20,16 @@ gsap.registerPlugin(CustomEase)
 
 Vue.config.productionTip = false
 
+// Tooltip
+import { VTooltip, VPopover, VClosePopover } from 'v-tooltip'
+
+Vue.directive('tooltip', VTooltip)
+Vue.directive('close-popover', VClosePopover)
+Vue.component('v-popover', VPopover)
+
 // Component Defs =======
 import './utils/componentDefs'
+import ItemData from "@/data/itemData";
 
 Vue.directive('click-outside', {
     bind: function (el: any, binding, vnode) {
@@ -67,16 +76,31 @@ Vue.mixin({
         showContextMenu(target: any, options: MenuOption[], onClick: (selected: any) => void) {
             // @ts-ignore
             this.$store.dispatch('menu/showMenu', {
-                target,
-                options,
-                onClick,
+                contextMenuTarget: target,
+                contextMenuOptions: options,
+                contextMenuOnClick: onClick,
             })
         },
 
         hideContextMenu() {
             // @ts-ignore
             this.$store.dispatch('menu/hideMenu')
-        }
+        },
+
+        showAlert(title: string, message: string, type: string, onOk: () => void) {
+            // @ts-ignore
+            this.$store.dispatch('menu/showAlert', { title, message, type, onOk })
+        },
+
+        hideAlert() {
+            // @ts-ignore
+            this.$store.dispatch('menu/hideAlert')
+        },
+
+        reportError(errorMessage: string, item: ItemData) {
+            // TODO create error message
+            console.log("ERROR", errorMessage, item)
+        },
     },
 
     computed: {
@@ -105,14 +129,34 @@ Vue.mixin({
             return this.$store.getters["ui/showProperties"]
         },
 
+        showCompPropsEditor() {
+            // @ts-ignore
+            return this.$store.getters["ui/showCompPropsEditor"]
+        },
+
         showHierarchy() {
             // @ts-ignore
             return this.$store.getters["ui/showHierarchy"]
         },
 
+        showForm() {
+            // @ts-ignore
+            return this.$store.getters["ui/showForm"]
+        },
+
+        showCode() {
+            // @ts-ignore
+            return this.$store.getters["ui/showCode"]
+        },
+
+        showStyle() {
+            // @ts-ignore
+            return this.$store.getters["ui/showStyle"]
+        },
+
         onContextMenuClick() {
             // @ts-ignore
-            return this.$store.getters['menu/onClick']
+            return this.$store.getters['menu/contextMenuOnClick']
         },
 
         fullScreen() {
@@ -149,3 +193,11 @@ const app = new Vue({
         }
     },
 }).$mount('#app')
+
+// import FormView from "@/views/Editor/FormView";
+//
+// const app2 = new Vue({
+//     router,
+//     store,
+//     render: h => h(FormView),
+// }).$mount(window.childApp)

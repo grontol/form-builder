@@ -1,20 +1,11 @@
-import ItemData from "@/data/itemData";
-import TreeData from "@/data/treeData";
+import HistoryData from "@/data/HistoryData";
+import FileData from "@/data/FileData";
 
 export interface ItemState {
     stateIndex: number,
 
-    history: TreeData[],
-    historyIndex: number,
-
-    tree: TreeData,
-
-    activeItem: ItemData | null,
-    hoveredItem: ItemData | null,
-    draggedItem: ItemData | null,
-
-    selectedItems: ItemData[],
-    clipboardItems: ItemData[],
+    files: FileData[],
+    activeFile: FileData | null,
 
     treeComps: any[],
     viewComps: any[],

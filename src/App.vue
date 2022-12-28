@@ -1,10 +1,11 @@
 <template>
 	<div id="app"
          ref="app"
-         @click="$store.dispatch('item/setActiveItem', null)"
          @contextmenu.prevent
     >
         <router-view />
+        <v-popover>
+        </v-popover>
 	</div>
 </template>
 
@@ -22,6 +23,8 @@ export default {
     mounted() {
         window.addEventListener('keydown', this.keyDown)
         window.addEventListener('keyup', this.keyUp)
+
+        this.$store.dispatch('component/fetch')
     },
 
     beforeDestroy() {

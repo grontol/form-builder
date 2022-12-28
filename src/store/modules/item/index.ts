@@ -5,105 +5,21 @@ import ItemData from "@/data/itemData";
 import PrefManager from "@/data/prefManager";
 import Vue from "vue";
 import {createComponentByName} from "@/utils/componentUtil";
-import TreeData from "@/data/treeData";
+import FileData from "@/data/FileData";
 
-const maxHistory = 10
-const items = [
-    {
-        name: 'Form',
-        compName: 'Form',
-        comp: 'fb-form',
-        children: [
-            {
-                name: 'Input',
-                compName: 'Input',
-                comp: 'fb-input',
-                props: {
-                    id: 'id_visit',
-                    value: '100'
-                }
-            },
-            {
-                name: 'Panel',
-                compName: 'Panel',
-                comp: 'fb-panel',
-                children: [
-                    {
-                        name: 'Panel Title',
-                        compName: 'Panel Title',
-                        comp: 'fb-panel-title',
-                        props: {
-                            title: 'DATA DURANTE'
-                        }
-                    },
-                    {
-                        name: 'Panel Body',
-                        compName: 'Panel Body',
-                        comp: 'fb-panel-body',
-                        children: [
-                            {
-                                name: 'Row',
-                                compName: 'Row',
-                                comp: 'fb-row',
-                                children: [
-                                    {
-                                        name: 'Col',
-                                        compName: 'Col',
-                                        comp: 'fb-col',
-                                        props: {
-                                            col: 'md-12'
-                                        },
-                                        children: [
-                                            {
-                                                name: 'Col',
-                                                compName: 'Col',
-                                                comp: 'fb-col',
-                                                props: {
-                                                    col: 'md-6'
-                                                },
-                                                children: [
-                                                    {
-                                                        name: 'Form Group',
-                                                        compName: 'Form Group',
-                                                        comp: 'fb-form-group',
-                                                        children: [
+const uFile = new FileData("My Component 2", [])
+uFile.unsaved = true
 
-                                                        ]
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Custom Comp',
-                        compName: 'Custom Comp',
-                        comp: 'fb-panel-body',
-                        isComp: true,
-                    }
-                ]
-            }
-        ]
-    }
+const defFiles = [
+    new FileData("My Component", PrefManager.getAppState([])),
+    uFile
 ]
 
 const state: ItemState = {
     stateIndex: 0,
 
-    history: [] as TreeData[],
-    historyIndex: maxHistory,
-
-    tree: new TreeData("Root", PrefManager.getAppState(items)),
-
-    activeItem: null,
-    hoveredItem: null,
-    draggedItem: null,
-
-    selectedItems: [],
-    clipboardItems: [],
+    files: defFiles,
+    activeFile: defFiles[0],
 
     treeComps: [],
     viewComps: [],
@@ -121,28 +37,36 @@ const menu: Module<ItemState, RootState> = {
             return state.stateIndex
         },
 
+        files: (state, getters, rootState): FileData[] => {
+            return state.files
+        },
+
+        activeFile: (state, getters, rootState): FileData | null => {
+            return state.activeFile
+        },
+
         tree: (state, getters, rootState) => {
-            return state.tree
+            return state.activeFile?.history.current
         },
 
         activeItem: (state, getters, rootState) => {
-            return state.activeItem
+            return state.activeFile?.activeItem
         },
 
         selectedItems: (state, getters, rootState) => {
-            return state.selectedItems
+            return state.activeFile?.selectedItems
         },
 
         clipboardItems: (state, getters, rootState) => {
-            return state.clipboardItems
+            return state.activeFile?.clipboardItems
         },
 
         hoveredItem: (state, getters, rootState) => {
-            return state.hoveredItem
+            return state.activeFile?.hoveredItem
         },
 
         draggedItem: (state, getters, rootState) => {
-            return state.draggedItem
+            return state.activeFile?.draggedItem
         },
 
         treeComp: (state, getters, rootState) => (item: ItemData) => {
@@ -150,7 +74,8 @@ const menu: Module<ItemState, RootState> = {
         },
 
         activeTreeComp: (state, getters, rootState) => {
-            return state.activeItem ? state.treeComps.find(x => x.id === state.activeItem?.id)?.comp : null
+            throw "Tree comp not implemented"
+            // return state.activeItem ? state.treeComps.find(x => x.id === state.activeItem?.id)?.comp : null
         },
 
         isCtrl: (state, getters, rootState) => {
@@ -162,15 +87,27 @@ const menu: Module<ItemState, RootState> = {
         },
 
         canUndo: (state, getters, rootState) => {
-            return state.history.length > 0 && state.historyIndex >= state.history.length
+            return state.activeFile?.history.canUndo ?? false
         },
 
         canRedo: (state, getters, rootState) => {
-            return state.historyIndex < state.history.length - 1
+            return state.activeFile?.history.canRedo ?? false
         },
     },
 
     actions: {
+        setActiveFile ({ state, commit }, value) {
+            commit('setActiveFile', value)
+        },
+
+        closeFile ({ state, commit }, value) {
+            commit('closeFile', value)
+        },
+
+        addFile ({ state, commit }, value) {
+            commit('addFile', value)
+        },
+
         addItem({state, commit}, value) {
             commit('addHistory', value)
             commit('addItem', value)
@@ -273,47 +210,81 @@ const menu: Module<ItemState, RootState> = {
         redo ({ state, commit }, value) {
             commit('redo', value)
         },
+
+        save ({ state, commit }) {
+            commit('save')
+        },
     },
 
     mutations: {
+        setActiveFile (state, value) {
+            state.activeFile = value
+        },
+
+        closeFile (state, value) {
+            const index = state.files.findIndex(x => x === value)
+
+            if (index >= 0)
+                state.files.splice(index, 1)
+
+            if (state.activeFile === value) {
+                if (index < state.files.length)
+                    state.activeFile = state.files[index]
+                else if (state.files.length)
+                    state.activeFile = state.files[state.files.length - 1]
+                else
+                    state.activeFile = null
+            }
+        },
+
+        addFile (state, value) {
+            const file = new FileData("My Component")
+            file.unsaved = true
+
+            state.files.push(file)
+            state.activeFile = file
+        },
+
         addItem (state, value) {
-            if (!state.activeItem)
+            if (!state.activeFile?.activeItem)
                 return
 
-            if (!state.activeItem.children)
-                state.activeItem.children = []
-
-            const comp = new ItemData(createComponentByName(value), state.activeItem)
-
-            Vue.set(state.activeItem.children, state.activeItem.children.length, comp)
+            const comp = new ItemData(createComponentByName(value), state.activeFile.activeItem)
+            state.activeFile.activeItem.addChildrenItem(comp)
 
             state.stateIndex++
         },
 
         deleteSelectedItems (state, value) {
-            state.hoveredItem = null
-            state.activeItem = null
+            if (!state.activeFile)
+                return
 
-            for (const item of state.selectedItems) {
+            state.activeFile.hoveredItem = null
+            state.activeFile.activeItem = null
+
+            for (const item of state.activeFile.selectedItems) {
                 state.treeComps.splice(state.treeComps.findIndex(x => x.id === item.id), 1)
                 state.viewComps.splice(state.viewComps.findIndex(x => x.id === item.id), 1)
 
                 item.removeSelf()
             }
 
-            state.selectedItems = []
+            state.activeFile.clearSelectedItems()
 
             state.stateIndex++
         },
 
-        setActiveItem (state, item) {
+        setActiveItem (state, item: ItemData) {
+            if (!state.activeFile)
+                return
+
             if (item) {
                 if (state.isCtrl) {
-                    if (!state.selectedItems.includes(item))
-                        state.selectedItems.push(item)
+                    if (!state.activeFile.selectedItems.includes(item))
+                        state.activeFile.selectedItems.push(item)
                 }
                 else if (state.isShift) {
-                    let startIndex = state.activeItem?.index ?? 0
+                    let startIndex = state.activeFile.activeItem?.index ?? 0
                     let endIndex = item.index
 
                     if (startIndex > endIndex) {
@@ -336,50 +307,71 @@ const menu: Module<ItemState, RootState> = {
 
                     // state.selectedItems = newSels
                 }
-                else
-                    state.selectedItems = [item]
+                else {
+                    state.activeFile.clearSelectedItems()
+                    state.activeFile.selectedItems.push(item)
+                }
             }
             else {
-                state.selectedItems = []
+                state.activeFile.clearSelectedItems()
             }
 
-            state.activeItem = item
+            let i: ItemData | null = item
+
+            while (i) {
+                i.expanded = true
+                i = i.parent
+            }
+
+            state.activeFile.activeItem = item
         },
 
         setActiveItemLeaveOther (state, item) {
-            state.activeItem = item
+            if (!state.activeFile)
+                return
+
+            state.activeFile.activeItem = item
 
             if (item) {
-                if (!state.selectedItems.includes(item))
-                    state.selectedItems.push(item)
+                if (!state.activeFile.selectedItems.includes(item))
+                    state.activeFile.selectedItems.push(item)
             }
         },
 
         setHoveredItem (state, item) {
-            state.hoveredItem = item
+            if (!state.activeFile)
+                return
+
+            state.activeFile.hoveredItem = item
         },
 
         setDraggedItem (state, item) {
-            state.draggedItem = item
+            if (!state.activeFile)
+                return
+
+            state.activeFile.draggedItem = item
         },
 
         dropItem (state, { toItem, dropInto }: { toItem: ItemData, dropInto: string }) {
-            const dropItem = state.draggedItem
+            if (!state.activeFile)
+                return
+
+            const dropItem = state.activeFile.draggedItem
 
             if (!dropItem)
                 return
 
             // Remove hover
-            state.hoveredItem = null
+            state.activeFile.hoveredItem = null
 
             let dropParent: ItemData | null | undefined = dropItem.parent
             let toParent = toItem.parent
 
             if (!dropParent)
-                dropParent = state.tree
+                dropParent = state.activeFile.tree
 
             if (!toParent)
-                toParent = state.tree
+                toParent = state.activeFile.tree
 
             dropParent.children.removeByItem(x => x.id === dropItem.id)
 
@@ -394,7 +386,10 @@ const menu: Module<ItemState, RootState> = {
         },
 
         duplicateItems (state) {
-            const items = state.selectedItems
+            if (!state.activeFile)
+                return
+
+            const items = state.activeFile.selectedItems
 
             if (!items.length)
                 return
@@ -403,7 +398,7 @@ const menu: Module<ItemState, RootState> = {
                 let parent: ItemData | null = item.parent
 
                 if (!parent)
-                    parent = state.tree
+                    parent = state.activeFile.tree
 
                 parent.children.push(item)
             }
@@ -412,7 +407,10 @@ const menu: Module<ItemState, RootState> = {
         },
 
         duplicateItemsFromClipboard (state) {
-            const items = state.clipboardItems
+            if (!state.activeFile)
+                return
+
+            const items = state.activeFile.clipboardItems
 
             if (!items.length)
                 return
@@ -421,7 +419,7 @@ const menu: Module<ItemState, RootState> = {
                 let parent = item.parent
 
                 if (!parent)
-                    parent = state.tree
+                    parent = state.activeFile.tree
 
                 parent.children.push(item)
             }
@@ -430,47 +428,63 @@ const menu: Module<ItemState, RootState> = {
         },
 
         addSelectedItem (state, value) {
-            state.selectedItems.push(value)
+            if (!state.activeFile)
+                return
+
+            state.activeFile.selectedItems.push(value)
         },
 
         addClipboardItems (state, value) {
-            state.clipboardItems = [...state.selectedItems]
+            if (!state.activeFile)
+                return
+
+            state.activeFile.clipboardItems = [...state.activeFile.selectedItems]
         },
 
         setItemName (state, value) {
-            if (state.activeItem)
-                state.activeItem.name = value
+            if (!state.activeFile)
+                return
+
+            if (state.activeFile.activeItem)
+                state.activeFile.activeItem.name = value
         },
 
         saveState (state, value) {
-            PrefManager.setAppState(state.tree)
+            if (!state.activeFile)
+                return
+
+            PrefManager.setAppState(state.activeFile.tree)
         },
 
         addHistory (state, value) {
-            state.history.push(JSON.parse(JSON.stringify(state.tree)))
+            if (!state.activeFile)
+                return
 
-            if (state.history.length > maxHistory)
-                state.history.shift()
-
-            state.historyIndex = state.history.length
+            state.activeFile.history.add(state.activeFile.tree.clone())
         },
 
         rename (state, value) {
-            if (!state.activeItem)
+            if (!state.activeFile)
                 return
 
-            state.activeItem.name = value
+            if (!state.activeFile.activeItem)
+                return
+
+            state.activeFile.activeItem.name = value
         },
 
         setPropValue (state, { propName, value }) {
-            if (!state.activeItem)
+            if (!state.activeFile)
                 return
 
-            if (!state.activeItem.props) {
-                Vue.set(state.activeItem, 'props', {})
+            if (!state.activeFile.activeItem)
+                return
+
+            if (!state.activeFile.activeItem.props) {
+                Vue.set(state.activeFile.activeItem, 'props', {})
             }
 
-            state.activeItem.props[propName] = value
+            state.activeFile.activeItem.props[propName] = value
         },
 
         setItemExpanded (state, { item, value }) {
@@ -492,7 +506,7 @@ const menu: Module<ItemState, RootState> = {
         },
 
         recreateTree (state) {
-            state.tree = state.tree.clone()
+            console.warn("Recreate tree not implemented")
         },
 
         isCtrl (state, value) {
@@ -504,26 +518,15 @@ const menu: Module<ItemState, RootState> = {
         },
 
         undo (state, value) {
-            if (state.historyIndex === state.history.length) {
-                state.history.push(JSON.parse(JSON.stringify(state.tree)))
-
-                if (state.history.length > maxHistory)
-                    state.history.shift()
-            }
-
-            if (state.historyIndex > 0)
-                state.tree = state.history[--state.historyIndex].clone()
-
-            if (state.activeItem)
-                state.activeItem = state.tree.findRecursive(x => x.id === state.activeItem?.id)
+            state.activeFile?.undo()
         },
 
         redo (state, value) {
-            if (state.historyIndex < state.history.length - 1)
-                state.tree = state.history[++state.historyIndex].clone()
+            state.activeFile?.redo()
+        },
 
-            if (state.activeItem)
-                state.activeItem = state.tree.findRecursive(x => x.id === state.activeItem?.id)
+        save (state) {
+            state.activeFile?.save()
         },
     },
 }
